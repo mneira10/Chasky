@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	azDevops "testBot/azDevops"
+	azDevops "main/azDevops"
 )
 
 func getCommand(userInput string) string {

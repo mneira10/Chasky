@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	commands "testBot/commands"
+	commands "main/commands"
 
 	"github.com/infracloudio/msbotbuilder-go/core"
 	"github.com/infracloudio/msbotbuilder-go/core/activity"
