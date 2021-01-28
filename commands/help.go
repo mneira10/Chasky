@@ -1,23 +1,66 @@
 package commands
 
-const indent = `&nbsp;&nbsp;&nbsp;&nbsp;`
+import (
+	"log"
+)
 
-func displayHelpMsg() string {
-	return `__help__` + "   \n" +
-		indent + `List all available bot commands.` + "   \n" +
-		indent + `OPTIONAL` + "   \n" +
-		indent + indent + `Command name - prints the command documentation` + "   \n" +
-		indent + indent + `Usage: ` + "   \n" +
-		indent + indent + indent + `help <command>` + "   \n" +
-		indent + indent + `Example:` + "   \n" +
-		indent + indent + indent + `help listPRs` + "   \n" +
-		`__listPRs__` + "   \n" +
-		indent + `List all active pull requests.` + "   \n" +
-		indent + `OPTIONAL` + "   \n" +
-		indent + indent + `Name of the reviewer - returns the pull requests asigned to <name of reviewer>` + "   \n" +
-		indent + indent + `Usage:` + "   \n" +
-		indent + indent + indent + `listPRs <name of reviewer>` + "   \n" +
-		indent + indent + `Example:` + "   \n" +
-		indent + indent + indent + `listPRs Pepito Perez` + "   \n"
+// HelpCommand struct
+type helpCommand struct {
+	availableCommands map[string]Command
+	commInput         CommandInput
+}
 
+func (command helpCommand) GetDescription() string {
+	return "List the available commands and their descriptions"
+}
+
+func (command helpCommand) SetCommandInput(commInput CommandInput) {
+	command.commInput = commInput
+	log.Println("Set command input ")
+}
+
+func (command helpCommand) Execute() {
+	log.Println("executing help command")
+	command.availableCommands = GetAvailableCommands()
+}
+
+func (command helpCommand) GetOutput() (string, bool) {
+	// for commandName, command := range command.availableCommands {
+	// 	description := command.GetDescription()
+	// }
+	responseTxt := `{
+		"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+		"type": "AdaptiveCard",
+		"version": "1.0",
+		"body": [
+			{
+				"type": "Container",
+				"items": [
+					{
+						"type": "TextBlock",
+						"text": "Help",
+						"weight": "Bolder",
+						"size": "Medium"
+					}
+				]
+			},
+			{
+				"type": "Container",
+				"items": [
+					{
+						"type": "TextBlock",
+						"text": "List of available commands",
+						"weight": "Bolder",
+						"wrap": true
+					}
+				]
+			}
+		]
+	}`
+
+	return responseTxt, true
+}
+
+func (command helpCommand) Help() (string, bool) {
+	return "some help", false
 }

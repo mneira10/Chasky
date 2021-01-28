@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -17,8 +17,31 @@ import (
 var customHandler = activity.HandlerFuncs{
 	OnMessageFunc: func(turn *activity.TurnContext) (schema.Activity, error) {
 		log.Println("in custom handler")
-		responseTxt := commands.HandleCommand(turn.Activity.Text)
+		responseTxt, isJSONText := commands.HandleCommand(turn.Activity.Text)
+
+		if isJSONText {
+
+			log.Println("Response is JSON.")
+			var obj map[string]interface{}
+			byteTxt := []byte(responseTxt)
+
+			err := json.Unmarshal(byteTxt, &obj)
+
+			if err != nil {
+				return schema.Activity{}, err
+			}
+
+			attachments := []schema.Attachment{
+				{
+					ContentType: "application/vnd.microsoft.card.adaptive",
+					Content:     obj,
+				},
+			}
+			return turn.SendActivity(activity.MsgOptionAttachments(attachments))
+		}
+		log.Println("Response is regular text")
 		return turn.SendActivity(activity.MsgOptionText(responseTxt))
+
 	},
 }
 
@@ -64,6 +87,6 @@ func main() {
 	httpHandler := &HTTPHandler{adapter}
 
 	http.HandleFunc("/", httpHandler.processMessage)
-	fmt.Printf("Starting server on port:%s...\n", port)
+	log.Printf("Starting server on port:%s...\n", port)
 	http.ListenAndServe(":"+port, nil)
 }

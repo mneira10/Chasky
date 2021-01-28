@@ -1,41 +1,63 @@
 package commands
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"strings"
-	azDevops "main/azDevops"
 )
 
-func getCommand(userInput string) string {
-
-	trimmedInput := strings.TrimSpace(userInput)
-	firstWord := strings.Split(trimmedInput, " ")[0]
-	trimmedFirstWord := strings.ToLower(strings.TrimSpace(firstWord))
-	log.Println("Parsed command:", trimmedFirstWord)
-
-	return trimmedFirstWord
+// CommandInput struct
+type CommandInput struct {
+	commandName string
+	args        []string
 }
 
-// HandleCommand handles user input string commands
-func HandleCommand(userText string) string {
+func (commandInput CommandInput) String() string {
+	completeCommand := append([]string{commandInput.commandName}, commandInput.args...)
+	return strings.Join(completeCommand, " ")
+}
+
+func (commandInput *CommandInput) parseInput(userInput string) error {
+
+	trimmedInput := strings.TrimSpace(userInput)
+	splitCommand := strings.Split(trimmedInput, " ")
+
+	if len(splitCommand) == 0 {
+		return errors.New("Empty input, received: " + userInput)
+	}
+
+	commandInput.commandName = strings.ToLower(splitCommand[0])
+
+	if len(splitCommand) > 1 {
+		commandInput.args = splitCommand[1:]
+	}
+
+	log.Println("Parsed command:", commandInput)
+
+	return nil
+}
+
+/*
+	HandleCommand recieves the user input
+	and returns the string to be
+	returned to the user.
+*/
+func HandleCommand(userText string) (string, bool) {
 	log.Printf("Recieved: =>%s<=\n", userText)
 
-	command := getCommand(userText)
+	var commandInput CommandInput
+	error := commandInput.parseInput(userText)
 
-	var response string
-	switch command {
-	case "listprs":
-		response = azDevops.GetPRs()
-	case "help":
-		response = displayHelpMsg()
-	case "hola":
-		response = "Quiubo humano!"
-	case "hello", "hi":
-		response = "Hello human!"
-	default:
-		response = fmt.Sprintf("I did not understand the command: ```%s```. Type ```help``` for a list of available commands or ```help <command>``` for the command's documentation.", userText)
+	if error != nil {
+		log.Fatal(error)
 	}
-	log.Println(response)
-	return response
+
+	command := commandFactory(commandInput)
+
+	command.Execute()
+
+	log.Println("Getting command output")
+	response, isJSONText := command.GetOutput()
+	log.Println("Retrieved command output")
+	return response, isJSONText
 }
