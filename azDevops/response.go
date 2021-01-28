@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -70,8 +71,8 @@ func getPullRequests(project string, user string, token string) PullRequests {
 // GetPRs returns a string with all of the pull requests in iMedical's repositories
 func GetPRs() string {
 	projectsUrl := "https://dev.azure.com/imedicalservices/_apis/projects/?api-version=5.0"
-	token := "ut6dkcefggjykf46o4a25xeypni72mbhqxlsxpgvy63z7q4m5uwa"
-	user := "mauricio.neira"
+	token := os.Getenv("AZ_DEVOPS_TOKEN")
+	user := os.Getenv("AZ_DEVOPS_USER")
 
 	projects := getProjects(projectsUrl, token, user)
 	numPRs := 0
