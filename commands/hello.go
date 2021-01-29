@@ -1,17 +1,25 @@
 package commands
 
+import (
+	"fmt"
+	nasaAPI "main/nasaAPI"
+)
+
 type helloCommand struct {
 }
 
 func (c helloCommand) Execute() {}
 
 func (c helloCommand) GetDescription() string {
-	return "Greet humans!"
+	return "Saludar!"
 }
 
 func (c helloCommand) SetCommandInput(command CommandInput) {}
 
 func (c helloCommand) GetOutput() (string, bool) {
+
+	apodImageURL := nasaAPI.GetAPODURL()
+
 	response := `
 	{
 		"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -23,61 +31,30 @@ func (c helloCommand) GetOutput() (string, bool) {
 				"items": [
 					{
 						"type": "TextBlock",
-						"text": "Hello, Human",
+						"text": "¡Hola!",
 						"weight": "Bolder",
 						"size": "Medium"
 					},
 					{
 						"type": "TextBlock",
-						"text": "Here is a random image of a dog:",
+						"text": "Esta es la foto del día de la NASA:",
 						"wrap": true
 					}
 				]
 			},
 			{
 				"type": "Image",
-				"url": "https://placedog.net/500/280?random"
+				"url": "%s"
 			},
 			{
 				"type": "TextBlock",
-				"text": "Have a nice day!",
+				"text": "¿En qué puedo ayudarte?",
 				"wrap": true
 			}
 		]
 	}
 	`
-	return response, true
-}
 
-func (c helloCommand) Help() (string, bool) {
-	response := `
-		{
-			"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-			"type": "AdaptiveCard",
-			"version": "1.3",
-			"body": [
-				{
-					"type": "Container",
-					"items": [
-						{
-							"type": "TextBlock",
-							"text": "This function greets humans",
-							"weight": "Bolder",
-							"size": "Medium"
-						},
-						{
-							"type": "TextBlock",
-							"text": "And returns images of dogs. Like this one!",
-							"wrap": true
-						}
-					]
-				},
-				{
-					"type": "Image",
-					"url": "https://placedog.net/500/280?random"
-				}
-			]
-		}
-	`
+	response = fmt.Sprintf(response, apodImageURL)
 	return response, true
 }
