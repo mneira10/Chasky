@@ -1,7 +1,8 @@
 package commands
 
 import (
-	"log"
+	"fmt"
+	"strings"
 )
 
 // HelpCommand struct
@@ -11,56 +12,88 @@ type helpCommand struct {
 }
 
 func (command helpCommand) GetDescription() string {
-	return "List the available commands and their descriptions"
+	return "Listar los comandos disponibles."
 }
 
 func (command helpCommand) SetCommandInput(commInput CommandInput) {
 	command.commInput = commInput
-	log.Println("Set command input ")
 }
 
-func (command helpCommand) Execute() {
-	log.Println("executing help command")
-	command.availableCommands = GetAvailableCommands()
-}
+func (command helpCommand) Execute() {}
 
 func (command helpCommand) GetOutput() (string, bool) {
-	// for commandName, command := range command.availableCommands {
-	// 	description := command.GetDescription()
-	// }
-	responseTxt := `{
-		"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-		"type": "AdaptiveCard",
-		"version": "1.0",
-		"body": [
+
+	var commandStrings []string
+
+	commandContainer := `{
+		"type": "Container",
+		"items": [
 			{
-				"type": "Container",
-				"items": [
+				"type": "ColumnSet",
+				"columns": [
 					{
-						"type": "TextBlock",
-						"text": "Help",
-						"weight": "Bolder",
-						"size": "Medium"
-					}
-				]
-			},
-			{
-				"type": "Container",
-				"items": [
+						"type": "Column",
+						"width": "stretch",
+						"items": [
+							{
+								"type": "TextBlock",
+								"text": "%s",
+								"wrap": true,
+								"horizontalAlignment": "Center",
+								"separator": true,
+								"spacing": "None",
+								"height": "stretch"
+							}
+						]
+					},
 					{
-						"type": "TextBlock",
-						"text": "List of available commands",
-						"weight": "Bolder",
-						"wrap": true
+						"type": "Column",
+						"width": "stretch",
+						"items": [
+							{
+								"type": "TextBlock",
+								"text": "%s",
+								"wrap": true
+							}
+						]
 					}
 				]
 			}
 		]
 	}`
 
-	return responseTxt, true
-}
+	availableCommands := GetAvailableCommands()
 
-func (command helpCommand) Help() (string, bool) {
-	return "some help", false
+	availableCommands["help"] = helpCommand{}
+
+	for commandName, externalCommand := range availableCommands {
+		description := externalCommand.GetDescription()
+
+		commandContainerWithData := fmt.Sprintf(commandContainer, commandName, description)
+		commandStrings = append(commandStrings, commandContainerWithData)
+	}
+
+	commandsText := strings.Join(commandStrings, ",")
+	responseTxt := fmt.Sprintf(`{
+		"type": "AdaptiveCard",
+		"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+		"version": "1.0",
+		"body": [
+			{
+				"type": "TextBlock",
+				"text": "Help",
+				"wrap": true,
+				"weight": "Bolder",
+				"size": "Large"
+			},
+			{
+				"type": "TextBlock",
+				"text": "Estos son los comandos displonibles:",
+				"wrap": true
+			},
+			%s
+		]
+	}`, commandsText)
+
+	return responseTxt, true
 }
