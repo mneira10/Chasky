@@ -8,17 +8,15 @@ type Command interface {
 	GetDescription() string
 	Execute()
 	GetOutput() (string, bool)
-	Help() (string, bool)
 }
 
 // GetAvailableCommands returns the available commands
 // mapped to an instance of a Command
 func GetAvailableCommands() map[string]Command {
 
-	// var listprs azdevopscommand.AzDevopsCommand
-	// return nil
 	return map[string]Command{
 		"hello": helloCommand{},
+		"hola":  helloCommand{},
 	}
 }
 

@@ -14,7 +14,3 @@ func (env listPRs) Execute() {
 func (env listPRs) GetOutput() (string, bool) {
 	return "some azOuput", false
 }
-
-func (env listPRs) Help() (string, bool) {
-	return "some help in azDevops", false
-}
