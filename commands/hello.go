@@ -5,18 +5,17 @@ import (
 	nasaAPI "main/nasaAPI"
 )
 
-type helloCommand struct {
-}
+type helloCommand struct{}
 
-func (c helloCommand) Execute() {}
+func (c helloCommand) execute() {}
 
-func (c helloCommand) GetDescription() string {
+func (c helloCommand) getDescription() string {
 	return "Saludar!"
 }
 
-func (c helloCommand) SetCommandInput(command CommandInput) {}
+func (c helloCommand) setCommandInput(command CommandInput) {}
 
-func (c helloCommand) GetOutput() (string, bool) {
+func (c helloCommand) getOutput() (string, bool) {
 
 	apodImageURL := nasaAPI.GetAPODURL()
 
@@ -24,7 +23,7 @@ func (c helloCommand) GetOutput() (string, bool) {
 	{
 		"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
 		"type": "AdaptiveCard",
-		"version": "1.3",
+		"version": "1.0",
 		"body": [
 			{
 				"type": "Container",
@@ -33,7 +32,7 @@ func (c helloCommand) GetOutput() (string, bool) {
 						"type": "TextBlock",
 						"text": "¡Hola!",
 						"weight": "Bolder",
-						"size": "Medium"
+						"size": "ExtraLarge"
 					},
 					{
 						"type": "TextBlock",
@@ -46,6 +45,18 @@ func (c helloCommand) GetOutput() (string, bool) {
 				"type": "Image",
 				"url": "%s"
 			},
+			{
+				"type": "ActionSet",
+				"actions": [
+					{
+						"type": "Action.OpenUrl",
+						"title": "Más información",
+						"url": "https://apod.nasa.gov/apod/astropix.html"
+					}
+				],
+				"height": "stretch",
+				"horizontalAlignment": "Center"
+        	},
 			{
 				"type": "TextBlock",
 				"text": "¿En qué puedo ayudarte?",

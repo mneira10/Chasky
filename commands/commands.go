@@ -54,10 +54,10 @@ func HandleCommand(userText string) (string, bool) {
 
 	command := commandFactory(commandInput)
 
-	command.Execute()
+	command.execute()
 
 	log.Println("Getting command output")
-	response, isJSONText := command.GetOutput()
+	response, isJSONText := command.getOutput()
 	log.Println("Retrieved command output")
 	return response, isJSONText
 }

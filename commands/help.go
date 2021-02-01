@@ -11,17 +11,17 @@ type helpCommand struct {
 	commInput         CommandInput
 }
 
-func (command helpCommand) GetDescription() string {
+func (command helpCommand) getDescription() string {
 	return "Listar los comandos disponibles."
 }
 
-func (command helpCommand) SetCommandInput(commInput CommandInput) {
+func (command helpCommand) setCommandInput(commInput CommandInput) {
 	command.commInput = commInput
 }
 
-func (command helpCommand) Execute() {}
+func (command helpCommand) execute() {}
 
-func (command helpCommand) GetOutput() (string, bool) {
+func (command helpCommand) getOutput() (string, bool) {
 
 	var commandStrings []string
 
@@ -67,7 +67,7 @@ func (command helpCommand) GetOutput() (string, bool) {
 	availableCommands["help"] = helpCommand{}
 
 	for commandName, externalCommand := range availableCommands {
-		description := externalCommand.GetDescription()
+		description := externalCommand.getDescription()
 
 		commandContainerWithData := fmt.Sprintf(commandContainer, commandName, description)
 		commandStrings = append(commandStrings, commandContainerWithData)

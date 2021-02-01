@@ -4,10 +4,10 @@ import "log"
 
 // Command behavior
 type Command interface {
-	SetCommandInput(CommandInput CommandInput)
-	GetDescription() string
-	Execute()
-	GetOutput() (string, bool)
+	setCommandInput(commInput CommandInput)
+	getDescription() string
+	execute()
+	getOutput() (string, bool)
 }
 
 // GetAvailableCommands returns the available commands
@@ -15,8 +15,9 @@ type Command interface {
 func GetAvailableCommands() map[string]Command {
 
 	return map[string]Command{
-		"hello": helloCommand{},
-		"hola":  helloCommand{},
+		"hello":   helloCommand{},
+		"hola":    helloCommand{},
+		"listprs": listPRsCommand{},
 	}
 }
 
@@ -28,13 +29,13 @@ func commandFactory(commandInput CommandInput) Command {
 
 	if command, ok := availableCommands[lowerCaseCommandName]; ok {
 		log.Println("Setting command input")
-		command.SetCommandInput(commandInput)
+		command.setCommandInput(commandInput)
 		return command
 	}
 
 	// return initialized helpCommand struct
 	var helpComm helpCommand
 	helpComm.availableCommands = availableCommands
-	helpComm.SetCommandInput(commandInput)
+	helpComm.setCommandInput(commandInput)
 	return helpComm
 }
